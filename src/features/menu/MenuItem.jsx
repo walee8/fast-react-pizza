@@ -24,8 +24,8 @@
 
 import { formatCurrency } from "../../utils/helpers";
 import Button from "../../UI/Button";
-import { useDispatch } from "react-redux";
-import {addItem} from '../cart/cartSlice';
+import { useDispatch, useSelector } from "react-redux";
+import {addItem, getCurrentQuantityById} from '../cart/cartSlice';
 
 
 import pizza1 from "../../Asset/pizza1.JPG";
@@ -46,6 +46,8 @@ import pizza15 from "../../Asset/pizza15.JPG";
 import pizza16 from "../../Asset/pizza16.JPG";
 import pizza17 from "../../Asset/pizza17.JPG";
 import pizza18 from "../../Asset/pizza18.JPG";
+import DeleteItem from "../cart/DeleteItem";
+import UpdateItemQuantity from "../cart/UpdateItemQuantity";
 
 const images = {
   1: pizza1,
@@ -73,6 +75,12 @@ function MenuItem({ pizza }) {
   const dispatch = useDispatch();
   const { id, name, unitPrice, ingredients, soldOut, imageUrl } = pizza;
 
+  const currentQuantity = useSelector(getCurrentQuantityById(id));
+  const isinCart = currentQuantity > 0; 
+  
+
+  
+
   // fallback image in case the API link is broken
   const fixedImageUrl = imageUrl?.startsWith("http")
     ? imageUrl
@@ -81,7 +89,7 @@ function MenuItem({ pizza }) {
     function handleAddToCart(){
       console.log(id);
       const newItem = {
-        pizzaID: id,
+        pizzaId: id,
         name,
         quantity:1,
         unitPrice,
@@ -113,7 +121,17 @@ function MenuItem({ pizza }) {
             </p>
           )}
 
-          {!soldOut && (<Button type="small" onClick = {handleAddToCart}>Add to Cart</Button>)}
+          {isinCart && (
+            <div className="flex items-center gap-3 sm:gap-8">
+              <UpdateItemQuantity
+                pizzaId={id}
+                currentQuantity={currentQuantity}
+              />
+              <DeleteItem pizzaId={id}/>
+            </div>
+            )}
+
+          {!soldOut && !isinCart && (<Button type="small" onClick = {handleAddToCart}>Add to Cart</Button>)}
         </div>
       </div>
     </li>

@@ -1,4 +1,3 @@
-
 import LinkButton from '../../UI/LinkButton';
 
 function EmptyCart() {
